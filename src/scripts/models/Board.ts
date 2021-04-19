@@ -27,6 +27,7 @@ export class Board extends Phaser.Events.EventEmitter {
 	
 	private _create(): void {
 		this._createFields();
+		this._createBombs();
 	}
 
 	private _createFields(): void {
@@ -37,5 +38,17 @@ export class Board extends Phaser.Events.EventEmitter {
 		}
 	}
 
+	private _createBombs(): void {
+		let count = this._bombs; // определить число бомб для генерации
+
+		while (count > 0) { // пока не создано требуемое число бомб
+			let field = this._fields[Phaser.Math.Between(0, this._fields.length - 1)]; // получить рандомное поле
+
+			if (field.empty) { // если полученное поле пустое
+				field.setBomb(); // поместить в него бомбу
+				--count; // уменьшить счетчик бомб
+			}
+		}
+	}
 	
 }
