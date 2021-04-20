@@ -1,13 +1,32 @@
 import { FieldView } from "./../views/FieldView";
 import { Board } from "./Board";
 
+const Positions = [
+    {row : 0, col : 1}, // справа
+    {row : 0, col : -1}, // слева
+    {row : 1, col : 0}, // сверху
+    {row : 1, col : 1}, // сверху справа
+    {row : 1, col : -1}, // сверху слева
+    {row : -1, col : 0}, // снизу
+    {row : -1, col : 1}, // снизу справа
+    {row : -1, col : -1} // снизу слева
+];
+
+enum States {
+   Closed = 'closed',
+   Opened = 'opened',
+   Marked = 'flag'
+};
+
 export class Field extends Phaser.Events.EventEmitter {
+	private _state: string = States.Closed;
     private _scene: Phaser.Scene = null;
     private _board: Board = null;
     private _row: number = 0;
     private _col: number = 0;
 	private _view: FieldView = null;
 	private _value: number = 0;
+	private _exploded: boolean = false;
 
     constructor(scene: Phaser.Scene, board: Board, row: number, col: number) {
         super();
@@ -36,7 +55,6 @@ export class Field extends Phaser.Events.EventEmitter {
 
 	public setBomb(): void {
 		this._value = -1;
-		console.log(this);
 	}
 
     public get col(): number {
@@ -55,6 +73,59 @@ export class Field extends Phaser.Events.EventEmitter {
 		return this._view;
 	}
 
+	public getClosestFields(): Field[] {
+		let results = [];
+
+		// для каждой возможной соседней позиции
+		Positions.forEach(position => {
+			// получим клетку в заданной позиции
+			let field = this._board.getField(this._row + position.row, this._col + position.col);
+
+			// если такая клетка есть на доске
+			if (field) {
+				// добавить ее в пул
+				results.push(field);
+			}
+		});
+
+		return results;
+	}
+	
+    public get marked(): boolean {
+        return this._state === States.Marked;
+    }
+
+    public get closed(): boolean {
+        return this._state === States.Closed;
+    }
+
+    public get opened(): boolean {
+        return this._state === States.Opened;
+    }	
+
+	public open(): void {
+		this._setState(States.Opened);
+	}
+
+	public set exploded(exploded: boolean) {
+		this._exploded = exploded;
+		this.emit('change');
+	}
+	public get exploded(): boolean {
+		return this._exploded;
+	}
+
+	private _setState(state: string): void {
+		if (this._state !== state) {
+			this._state = state;
+			this.emit('change');
+		}
+	}
+	
+	public get completed(): boolean {
+		return this.marked && this.mined;
+	}	
+	
     private _init(scene: Phaser.Scene, board: Board, row: number, col: number): void {
         this._scene = scene;
         this._board = board;
@@ -62,4 +133,12 @@ export class Field extends Phaser.Events.EventEmitter {
         this._col = col;
 		this._view = new FieldView(this._scene, this);
     }
+	
+	public addFlag(): void {
+		this._setState(States.Marked);
+	}
+
+	public removeFlag(): void {
+		this._setState(States.Closed);
+	}	
 }

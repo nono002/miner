@@ -28,13 +28,32 @@ export class Board extends Phaser.Events.EventEmitter {
 	private _create(): void {
 		this._createFields();
 		this._createBombs();
+		this._createValues();
+
+		// some info
+		//this._fields.forEach(field => {
+		//	console.log("_col: " + field.col + " _row: " + field.row + " value: " + field.value);
+			//console.log(field);
+		//});
 	}
 
 	private _createFields(): void {
 		for (let row = 0; row < this._rows; row++) {
 			for (let col = 0; col < this._cols; col++) {
-				this._fields.push(new Field(this._scene, this, row, col));
+				const field = new Field(this._scene, this, row, col)
+				field.view.on('pointerdown', this._onFieldClick.bind(this, field));
+				this._fields.push(field);
 			}
+		}
+	}
+
+	private _onFieldClick(field: Field, pointer: Phaser.Input.Pointer): void {
+		if (pointer.leftButtonDown()) {
+			this.emit(`left-click`, field);
+			//console.log("LB pressed");
+		} else if (pointer.rightButtonDown()) {
+			this.emit(`right-click`, field);
+			//console.log("RB pressed");
 		}
 	}
 
@@ -49,6 +68,50 @@ export class Board extends Phaser.Events.EventEmitter {
 				--count; // уменьшить счетчик бомб
 			}
 		}
+	}
+	
+	private _createValues() {
+		// для каждого поля на доске
+		this._fields.forEach(field => {
+			// если в поле есть мина
+			if (field.mined) {
+				// для каждой соседней ячейки
+				field.getClosestFields().forEach(item => {
+					// увеличим показатель числа мин рядом
+					if (item.value >= 0) {
+						++item.value;
+					}
+				});
+			}
+		});
+	}
+
+	public getField(row: number, col: number): Field {
+		return this._fields.find(field => field.row === row && field.col === col);
+	}
+
+	public openClosestFields(field: Field): void {
+		field.getClosestFields().forEach(item => {// для каждой соседней ячейки
+			if (item.closed) {// если она закрыта
+				item.open();// открыть ячейку
+
+				if (item.empty) {// если она пуста
+					this.openClosestFields(item);// открыть соседей этой ячейки
+				}
+			}
+		});
+	}
+
+	public get completed(): boolean {
+		return this._fields.filter(field => field.completed).length === this._bombs;
+	}
+	
+	public open(): void {
+		this._fields.forEach(field => field.open());
+	}	
+
+	public get countMarked(): number {
+		return this._fields.filter(field => field.marked).length;
 	}
 	
 }
