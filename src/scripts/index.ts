@@ -14,10 +14,11 @@ import * as Phaser from 'phaser';
 //import Scenes from './scenes';
 import { StartScene } from './scenes/StartScene';
 import { GameScene } from './scenes/GameScene';
-
+import { OtherScene } from './scenes/OtherScene';
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
-  title: 'miner',
+  title: '15nashki',
+
   type: Phaser.AUTO,
 
   scale: {
@@ -25,16 +26,22 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     height: window.innerHeight,
   },
 
-  scene: [StartScene, GameScene], //[Scenes],
-/*
+  scene: [StartScene, GameScene, OtherScene], //[Scenes],
+
   physics: {
+	default: 'matter',
+    matter: {
+		debug: true,
+		enableSleeping: true
+	},
+	/*	
     default: 'arcade',
     arcade: {
 		gravity:{x:0, y:0},
 		debug: true,
-    },
+    },*/
   },
-*/
+
   parent: 'minesweeper',
   backgroundColor: "#F0FFFF",
 };
