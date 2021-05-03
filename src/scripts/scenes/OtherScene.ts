@@ -69,12 +69,12 @@ export class OtherScene extends Phaser.Scene {
 		
 		this.matter.world.setBounds(30, 30, this.cameras.main.width-30, this.cameras.main.height-30, 32, true, true, false, true);
 		
-		var path = '0 307 0 67 8 55 12 53 57 128 86 94 128 136 148 103 190 159 210 135 222 149 248 109 267 133 293 93 321 128 361 75 381 97 439 4 523 117 551 78 563 92 569 93 603 38 637 99 654 53 701 154 729 109 750 140 800 66 800 307';
+		//var path = '0 307 0 67 8 55 12 53 57 128 86 94 128 136 148 103 190 159 210 135 222 149 248 109 267 133 293 93 321 128 361 75 381 97 439 4 523 117 551 78 563 92 569 93 603 38 637 99 654 53 701 154 729 109 750 140 800 66 800 307';
 		//var verts = Phaser.Physics.Matter.Matter.Vertices.fromPath(path);
 
 		this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'logo');
 
-		console.log(this.matter.verts);
+		//console.log(this.matter.verts);
 
 		//var verts = this.matter.verts.fromPath(path);
 
@@ -87,24 +87,36 @@ export class OtherScene extends Phaser.Scene {
 */
 		//var prev;
 
-		var prev = this.matter.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(-600, 0), 'sphera');
-
+		var block = this.matter.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(-600, 0), 'sphera', 0 );
+		
+		block.setFixedRotation();
+		block.setMass(500);
+		var prev = block;
+		var ball;
+		
 		for (var i = 0; i < 64; i++)
 		{
 			//var ball = this.matter.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(-600, 0), 'sphera');
 			
-			var ball = this.matter.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(-600, 0), 'sphera');
+			ball = this.matter.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(-600, 0), 'sphera', 0);
+			//ball.active = true;
 			ball.setCircle(20);
-			ball.setFriction(0.005);
-			ball.setBounce(1);
-			ball.setMass(500);
-			ball.setIgnoreGravity(false);
-			        
+			//ball.setFriction(0.005);
+			//ball.setBounce(1);
+			//ball.setMass(500);
+			//ball.setIgnoreGravity(false);
 			
-			//console.log(this.matter.add.joint);
-			//this.matter.add.joint(prev, ball, 60, 1);
+			//ball.setInteractive();
+			//this.matter.add.joint(prev, ball, (i === 0) ? 40 : 35, 0.4);
 			prev = ball;
+			console.log("+++ " + ball.listeners('onclick'));
 		}
+
+		//this.matter.add.car(50,50,100,150,20);
+
+		//var rope = new Phaser.GameObjects.Rope(this, 100,100, 'sphera', 0, 10, false);
+
+		//this.add.rope(10,10,'sphera',null,{10,10,20,20,200,200});
 
 		this.matter.add.mouseSpring();
 
