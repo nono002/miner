@@ -17,8 +17,7 @@ import { GameScene } from './scenes/GameScene';
 
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
-  title: '15nashki',
-
+  title: 'miner',
   type: Phaser.AUTO,
 
   scale: {

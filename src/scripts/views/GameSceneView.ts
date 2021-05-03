@@ -69,7 +69,7 @@ export class GameSceneView {
 
 		this._btnExit.setInteractive();
 		this._btnExit.once('pointerdown', () => {
-			this._scene.scene.start('Start');
+			this._scene.scene.start('StartScene');
 		});
 	}
 	
